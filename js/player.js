@@ -3,69 +3,84 @@
         return new Player.prototype.init($audio);
     }
     Player.prototype = {
-        constructor:Player,
-        musicList:[],
-        init:function ($audio) {
-            this.$audio=$audio;
-            this.audio=$audio.get(0);
+        constructor: Player,
+        init: function ($audio) {
+            this.$audio = $audio;
+            this.audio = $audio.get(0);
         },
-        currentId:-1,
-        playMusic:function (id) {
-            if(this.currentId==id){
+        musicList: [],
+        currentId: -1,
+        currentIndex:-1,
+        playMusic: function (id,index) {
+            var ele=this.$audio,ele1=this.audio;
+            if (this.currentId == id) {
                 //同一首音乐
-                if(this.audio.paused){
+                if (this.audio.paused) {
                     this.audio.play();
-                }else{
+                } else {
                     this.audio.pause();
                 }
-            }else{
+            } else {
                 //非同一首
-                var song={},songlist=[],xcode;
+                var song = {}, songlist = [], xcode,src;
                 $.ajax({
-                    url:'http://ting.baidu.com/data/music/links',
+                    url: 'http://ting.baidu.com/data/music/links',
                     type: 'GET',
                     data: {
-                        songIds:id,
+                        songIds: id,
                         format: 'json'
                     },
-                    dataType:'JSONP',
-                    success:function (data) {
+                    dataType: 'JSONP',
+                    success: function (data) {
                         console.log(data);
-                        for(var key in data){
-                            if(key=='data'){
-                                song=data[key];
-                                for(var key1 in song){
-                                    if(key1=='songList'){
-                                        songlist=song[key1];
-                                    }else if(key1=='xcode'){
-                                        xcode=song[key1];
+                        for (var key in data) {
+                            if (key == 'data') {
+                                song = data[key];
+                                for (var key1 in song) {
+                                    if (key1 == 'songList') {
+                                        songlist = song[key1];
+                                    } else if (key1 == 'xcode') {
+                                        xcode = song[key1];
                                     }
                                 }
-                                $('.song_info_pic').find('img').attr('src',songlist[0].songPicBig);//显示歌曲图片
+                                $('.song_info_pic').find('img').attr('src', songlist[0].songPicBig);//显示歌曲图片
+                                $('.song_info_ablum').find('a').text(songlist[0].albumName);
                                 //计算歌曲时间并显示
-                                var minutes=parseInt((songlist[0].time)/60);
-                                if(minutes<10){
-                                    minutes='0'+minutes;
+                                var minutes = parseInt((songlist[0].time) / 60);
+                                if (minutes < 10) {
+                                    minutes = '0' + minutes;
                                 }
-                                var seconds=songlist[0].time-minutes*60;
-                                var time=minutes+' : '+seconds;
+                                var seconds = songlist[0].time - minutes * 60;
+                                var time = minutes + ' : ' + seconds;
                                 $('.songTime').text(time);
-                            }
-                        }
-                        var msg=songlist[0].showLink.split('?');
-                        var src=msg[0]+'?xcode='+xcode;
-                        console.log(src);
-                        console.log(this.$audio);
-                        this.$audio.attr("src",src);
-                        this.audio.play();
+                            }                        }
+                        var msg = songlist[0].showLink.split('?');
+                        src = msg[0] + '?xcode=' + xcode;
                         //百度API似乎不允许跨域播放，服务器返回代码403
-                       // this.$audio.attr("src",songlist[0].showLink);
-                        //this.audio.load().play();
+                        ele.attr("src", src);
+                        ele1.load().play();
                     }
                 })
+                this.currentId=id;
+                this.currentIndex=index;
             }
+        },
+        preIndex:function () {
+            var index=this.currentIndex-1;
+            if(index<0){
+                index=this.musicList.length-1;
+                console.log(index);
+            }
+            return index;
+        },
+        nextIndex:function () {
+            var index=this.currentIndex+1;
+            if(index>this.musicList.length-1){
+                index=0;
+            }
+            return index;
         }
-    }
+    };
     Player.prototype.init.prototype=Player.prototype;
     window.Player=Player;
 })(window);
