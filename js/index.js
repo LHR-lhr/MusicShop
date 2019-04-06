@@ -5,6 +5,21 @@ $(function () {
     //播放相关
     var $audio=$("audio");
     var player=new Player($audio);
+
+    //音乐进度条相关
+    var $progressBar=$('.music_progress_bar');
+    var $progressLine=$('.music_progress_line');
+    var $progressDot=$('.music_progress_dot');
+    var progress=Progress($progressBar,$progressLine,$progressDot);
+    //音量进度条相关
+    var $vocieBar=$('.music_voice_bar');
+    var $vocieLine=$('.music_voice_line');
+    var $vocieDot=$('.music_voice_dot');
+    var progress1=Progress($vocieBar,$vocieLine,$vocieDot);
+    progress.progressClick();
+    progress.progressMove();
+    progress1.progressClick();
+    progress1.progressMove();
     //监听事件
     initEvents();
     function initEvents(){
@@ -41,7 +56,7 @@ $(function () {
             }
             $item.find('.list_number').toggleClass('list_number2');
             $item.siblings().find('.list_number').removeClass('list_number2');
-            var id=$item.attr('id'),index=$item.data('id');
+            var id=$item.attr('id'),index=$item.get(0).index;
             var name=$item.find('.list_name').text();
             var singer=$item.find('.list_singer').text();
             $('.song_info_name').find('a').text(name);
@@ -64,10 +79,27 @@ $(function () {
         $('.music_pre').on('click',function () {
             $('.list_music').eq(player.preIndex()).find('.list_menu_play').trigger('click');
         })
-        //监听底部控制区域上一首按钮的点击
+        //监听底部控制区域下一首按钮的点击
         $('.music_next').on('click',function () {
             $('.list_music').eq(player.nextIndex()).find('.list_menu_play').trigger('click');
         })
+        //监听删除按钮的点击事件
+        $('.content_list').delegate('.list_menu_del',"click",function () {
+            //找到被点击的音乐
+            var $item = $(this).parents('.list_music');
+            //判断当前删除的是否是正在播放的
+            if($item.get(0).index==player.currentIndex){
+                $('.music_next').trigger('click');
+            }
+            $item.remove();
+            player.changeMusic($item.get(0).index);
+            //重新排序
+            $('.list_music').each(function (index,ele) {
+                ele.index=index;
+                $(ele).find('.list_number').text(index+1);
+            })
+        })
+        //搜索音乐
         $('.register li:first').on('click',function () {
             var str=$('.search').val();
             var song=[],album=[],artist=[];
@@ -106,7 +138,7 @@ $(function () {
     }
     //歌曲列表动态生成
     function setPlayer(song) {
-        for (var i=0;i<song.length;i++){
+        for (let i=0;i<song.length;i++){
             let songname=song[i].songname;
             let songartist=song[i].artistname;
             let songid=song[i].songid;
@@ -125,13 +157,13 @@ $(function () {
                 "                        <div class=\"list_singer\" data-song-album="+songalbum+">"+songartist+"</div>\n" +
                 "                        <div class=\"list_time\">\n" +
                 "                            <span>"+songalbum+"</span>\n" +
-                "                            <a href=\"javascript:;\" title=\"删除\"></a>\n" +
+                "                            <a href=\"javascript:;\" title=\"删除\" class=\"list_menu_del\"></a>\n" +
                 "                        </div>\n" +
                 "                    </li>")
 
             var $musicList =$('.content_list ul');
             $musicList.append($item);
-            console.log(i);
+            $item.get(0).index=i+index;
         }
         //index=index+song.length;
     }
