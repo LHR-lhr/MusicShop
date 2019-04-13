@@ -423,3 +423,64 @@ html,body{
     margin-right: 30px;
     border: none;
 }
+#mask_bg{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background-color: rgba(128,128,128,0.8);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#mask_bg #content{
+    width: 500px;
+    height: 500px;
+    background-color: #fff;
+    border-radius: 3px;
+    position: relative;
+}
+#content span{
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    font-size: 23px;
+    color: rgba(0,0,0,0.6);
+}
+#content .tit{
+    width: 100%;
+    height: 50px;
+    margin-top: 50px;
+    text-align: center;
+    font-size: 25px;
+    line-height: 50px;
+    font-weight: 200;
+    color: indianred;
+}
+#content .text{
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 18px;
+    padding-top: 25px;
+    color: rgba(0,0,0,0.8);
+    height: 320px;
+}
+#content input{
+    display: inline-block;
+    width: 400px;
+    margin-left:50px;
+    height: 35px;
+    border: none;
+    background-color: indianred;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 100;
+}

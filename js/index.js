@@ -23,6 +23,13 @@ $(function () {
     //监听事件
     initEvents();
     function initEvents(){
+        //主页点击
+        $('#content').find('span').click(function () {
+            $('#mask_bg').hide('slow');
+        })
+        $('#content').find('input').click(function () {
+            $('#content').find('span').trigger('click');
+        })
         //监听歌曲移入移出事件:事件委托
         $('.content_list').delegate('.list_music','mouseenter',function () {
             $(this).find('.list_menu').stop().fadeIn(100);
